@@ -1,15 +1,13 @@
-/******************** (C) COPYRIGHT 2015 TIKO *****************************
-* File Name          : rs485.c
+/******************** (C) COPYRIGHT 2015 INCUBECN *****************************
+* File Name          : rs485Dev.h
 * Author             : Tiko Zhong
-* Date First Issued  : DEC12,2021
+* Date First Issued  : 04/20/2020
 * Description        : This file provides a set of functions needed to manage the
 *                      communication using HAL_UARTxxx
 ********************************************************************************
 * History:
-* DEC12, 2021: V0.1
-	+ 115200bps, 5ms/command test pass
-
-****************************************************************************/
+* 04/20/2020: V0.1
+*******************************************************************************/
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef _RS485_DEV_H
@@ -25,35 +23,43 @@ typedef struct{
 	PIN_T DE, DET;
 	//u8 squ;
 	u16 tick;
+	// cb
 }Rs485Rsrc_t;
 
 typedef struct{
 	Rs485Rsrc_t rsrc;
+	u8 (*RxPolling)			(Rs485Rsrc_t *pRsrc);
 	u16 (*RxFetchFrame)	(Rs485Rsrc_t *pRsrc, u8* frame, u16 frameLen);
-	u16 (*Send)			(Rs485Rsrc_t *pRsrc, const u8* BUF, u16 len);
-	u16 (*SendStr)		(Rs485Rsrc_t *pRsrc, const char* FORMAT_ORG, ...);
-	u16 (*TxPolling)	(Rs485Rsrc_t *pRsrc);
-	u16 (*RxPolling)	(Rs485Rsrc_t *pRsrc);
+//	u16 (*TxMonitor)	(Rs485Rsrc_t *pRsrc);
+	u16 (*Send)			(Rs485Rsrc_t *pRsrc, const u8* BUF, u16 len);	
+	void (*SendStr)	(Rs485Rsrc_t *pRsrc, const char* FORMAT_ORG, ...);
+	void (*TxPolling)	(Rs485Rsrc_t *pRsrc);
 }Rs485Dev_t;
 
 
 /* Exported variables --------------------------------------------------------*/
+//extern u8 rxBufIndx;
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
 void setupRs485Dev(
-	Rs485Dev_t *pDev,
+	Rs485Dev_t *pDev, 
 	UART_HandleTypeDef* huart,
-	u8* p,				// all rx pool, tx pool, rx double buffer
-	u16	rxPoolLen,		// lenth of rx pool, better 512 for 115200bps
-	u16 rxBufLen,		// lenth of rx buffer, better >=100 for 115200bps + 4ms polling
-	u16 txPoolLen,		// lenth of tx pool, must be power(2,n), better 512 for 115200bps
-	const PIN_T DE,		// DE PIN for bus chip
-	const PIN_T DET,	// DET PIN for bus chip
-	s8 (*beforeSend)(void),		// before send, test and take bus
-	s8 (*afterSend)(UART_HandleTypeDef *)	// after send, release bus
+	u8* txPool, u16 txPoolLen,
+	u8* rxPool,	u16	rxPoolLen,
+	u8* rxDoubleBuff,	u16 rxBufLen,
+	const PIN_T DE,
+	const PIN_T DET,
+	s8 (*beforeSend)(void),
+	s8 (*afterSend)(UART_HandleTypeDef *huart)
 );
+
 	
+//void setupRs485Dev1(
+//	Rs485Dev_t *pDev, 
+//	UartDev_t *pUartDev
+//);
+
 #endif /* _MY_UART_H */
 
-/**********************END OF FILE****/
+/******************* (C) COPYRIGHT 2015 INCUBECN *****END OF FILE****/
