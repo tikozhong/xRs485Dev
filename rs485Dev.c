@@ -55,13 +55,7 @@ void setupRs485Dev(
 
 	pRsrc->DE = DE;
 	pRsrc->DET = DET;
-	HAL_GPIO_WritePin(pRsrc->DE.GPIOx, pRsrc->DE.GPIO_Pin, GPIO_PIN_RESET);
-	
-	while(1){
-		if(HAL_GPIO_ReadPin(pRsrc->DET.GPIOx, pRsrc->DET.GPIO_Pin)==GPIO_PIN_RESET){
-			break;
-		}
-	}	
+	HAL_GPIO_WritePin(pRsrc->DE.GPIOx, pRsrc->DE.GPIO_Pin, GPIO_PIN_SET);
 	
 	setupUartDev(&pRsrc->uartdev, huart,
 		txPool, txPoolLen,
@@ -106,7 +100,6 @@ static u8 rs485RxMonitor(Rs485Rsrc_t *pRsrc){
 }
 
 static void rs485TxPolling(Rs485Rsrc_t *pRsrc){
-	if(HAL_GPIO_ReadPin(pRsrc->DET.GPIOx, pRsrc->DET.GPIO_Pin) == GPIO_PIN_SET)	return;
 	pRsrc->uartdev.TxPolling(&pRsrc->uartdev.rsrc);
 }
 

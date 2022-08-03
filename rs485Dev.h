@@ -24,6 +24,7 @@ typedef struct{
 	//u8 squ;
 	u16 tick;
 	// cb
+
 }Rs485Rsrc_t;
 
 typedef struct{
